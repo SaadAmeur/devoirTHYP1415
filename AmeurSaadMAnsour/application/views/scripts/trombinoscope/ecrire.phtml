@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	  	<script src="../js/d3.js"></script>
+  		<script src="../js/dimple.v2.1.0.min.js"></script>
+	
+		<script type="text/javascript">
+
+			var dtMinute = d3.time.format("%j %Hh%M");
+			var arrGraph = [];
+			
+			function sauveEvent(idUti, idTag){
+				execAjax("ajoutevent?idUti="+idUti+"&idTag="+idTag);
+			}
+	
+			function execAjax(url){
+				//on crée l'objet ajax
+				if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+					  xmlhttp=new XMLHttpRequest();
+				  }else{// code for IE6, IE5
+				  	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				//on paramètre l'objet
+				xmlhttp.onreadystatechange=function(){
+				  if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					  	var data = JSON.parse(xmlhttp.responseText);
+				    		//document.getElementById("rep_"+data.idUti).innerHTML=data.mess;
+						showGraph(data.idUti, data.histo);
+				    		
+				    }
+				}
+				xmlhttp.open("GET",url,true);
+				//en envoie la requête
+				xmlhttp.send();
+			}		
+			function showGraph(idUti, data){
+				//restructuration des data
+				data.forEach(function(d){
+					d.poids = Math.floor((Math.random() * 20) + 1);
+					var dt = new Date(d.maj);
+					d.minutes = dtMinute(dt);
+					});
+			
+				if(document.getElementById("graphTime"+idUti)){
+					var mg = arrGraph[idUti];
+					mg.data = data;
+					mg.draw();
+				}else{
+					var svg = dimple.newSvg("#rep_"+idUti, 590, 400);
+					svg.attr("id","graphTime"+idUti);				
+				      // Create and Position a Chart
+				      var myChart = new dimple.chart(svg, data);
+				      myChart.setBounds(60, 30, 500, 300);
+				      var x = myChart.addCategoryAxis("x", "minutes")
+				      myChart.addMeasureAxis("y", "poids");
+				      
+				
+				      // Order the x axis by date
+				      x.addOrderRule("maj");
+				
+				      // Min price will be green, middle price yellow and max red
+				      myChart.addColorAxis("tag_id", ["green", "yellow", "red"]);
+				
+				      // Add a thick line with markers
+				      var lines = myChart.addSeries(null, dimple.plot.line); 
+				      lines.lineWeight = 5;
+				      lines.lineMarkers = true;
+
+				      //conserve le graphique
+				      arrGraph[idUti] = myChart;
+					   // Draw the chart
+					    myChart.draw();
+				}			
+			
+			}			
+			function showGraph1(idUti){
+				var svg = dimple.newSvg("#rep_"+idUti, 590, 400);
+			    d3.tsv("../../data/example_data.tsv", function (data) {
+			
+			      // Filter for a single SKU and Channel
+			      data = dimple.filterData(data, "SKU", "Theta 18 Pack Standard");
+			      data = dimple.filterData(data, "Channel", "Hypermarkets");
+			
+			      // Create and Position a Chart
+			      var myChart = new dimple.chart(svg, data);
+			      myChart.setBounds(60, 30, 500, 300);
+			      var x = myChart.addCategoryAxis("x", "Month")
+			      myChart.addMeasureAxis("y", "Unit Sales");
+			
+			      // Order the x axis by date
+			      x.addOrderRule("Date");
+			
+			      // Min price will be green, middle price yellow and max red
+			      myChart.addColorAxis("Price", ["green", "yellow", "red"]);
+			
+			      // Add a thick line with markers
+			      var lines = myChart.addSeries(null, dimple.plot.line); 
+			      lines.lineWeight = 5;
+			      lines.lineMarkers = true;
+			
+			      // Draw the chart
+			      myChart.draw();
+			
+			    });				
+			}
+		</script>
+	</head>
+	
+	<body>	
+<?php
+
+
+//affiche les photos
+foreach ($this->data as $value) {
+	echo "<center>";
+	echo "<table border ='10'>";
+	echo "<tr>";
+	echo "<td><div id='rep_".$value["uti_id"]."' ></div></td><td><img width='300px' src='".$value["url"]."'/><br/><p align='center'>".$value["login"]."</p></td><td><img src='../icones/timeP.jpg' onclick='sauveEvent(".$value["uti_id"].",11)' /><img src='../icones/timeA.jpg' onclick='sauveEvent(".$value["uti_id"].",12)' /></td>";
+	echo"</tr>";
+	echo"</table>";
+	echo "</center>";
+	
+	/*echo "<div align='center'>";
+	echo "<img src='".$value["url"]."' />";
+	echo $value["login"];
+	echo "<img src='../icones/timeA.jpg' onclick='sauveEvent(".$value["uti_id"].",12)' />";
+	echo "<img src='../icones/timeP.jpg' onclick='sauveEvent(".$value["uti_id"].",11)' />";
+	echo "<div id='rep_".$value["uti_id"]."' ></div>";
+	echo "</div>";*/
+}
+?>
+	</body>
+</html>

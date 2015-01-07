@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			
+			<title> TROMBINOSCOPE</title>
+
+				<style>
+					#wrapper{
+						margin:auto;
+						width:800px;
+						background-color:GREY;
+						margin-bottom:40px;
+						margin-top:40px;
+						border:double 4px;
+						padding-left:30px;
+						
+					}
+
+					#header {
+						height:200px;
+						margin:0px;
+						width: auto;
+						text-align:center;
+					}		
+					
+				</style> 
+				
+	</head>
+	 
+	<body>
+		<div id="wrapper">
+			<div  style="font-size:28px;" id="header"><h1>TROMBINOSCOPE THYP 2014-2015</h1>
+        </div>
+	
+		<script type="text/javascript">
+			function sauveAbsence(idUti) {
+				
+				execAjax("ajoutabsence?idUti="+idUti, {"utiId":idUti});
+			}
+			
+			function execAjax(url, params) {
+				if(windows.XMLHttpRequest) {
+					xmlhttp = new XMLHttpRequest();
+				}
+				else {
+					xmlhttp =new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlhttp.onreadystatechange=function() [
+					if(xmlhttp.readyState==4 xmlhttp.status==200) {
+						document.getElementById("rep_".params.utiId).innerHTML = xmlhttp.responceText;
+					}
+				}
+				xmlhttp.open("Get",url,true);
+				xmlhttp.send();
+			}
+		</script>
+	<?php 
+ 
+  /*
+  $xml = simplexml_load_file('http://picasaweb.google.com/data/feed/base/user/107401320610499259896/albumid/6065229773950541889?alt=rss&kind=photo&authkey=Gv1sRgCNak7e60l-7VlgE&hl=fr');
+	
+	foreach ($xml->channel->item as $tof) {
+
+			echo "<table>";
+						echo "<tr><img src='".$tof->enclosure["url"]."'/></td>" ;
+						echo "<td> ".$tof->title."</td></tr>";
+			echo "</table>";
+	}	
+	*/
+	
+	foreach($this->data as $value) {
+	echo "<div align='center'>";
+		echo "<img src='".$value["url"]."'/>" ;
+		echo $value["login"];
+		echo "<img src='../icones/timeA.jpg' onclick='sauveAbsence(".$value["Uti_id"]")'>";
+		echo "<div id='rep'.$value["Uti_id"]></div>"
+	echo "</div>";
+	}
+	echo "toto=".$this->toto;
+?>
+
+		</div>
+	
+	</body>
+</html>

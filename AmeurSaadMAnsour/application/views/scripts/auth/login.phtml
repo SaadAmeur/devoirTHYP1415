@@ -1,0 +1,22 @@
+<?php
+	if($this->ajax){
+		if($this->erreur) echo "{'erreur':'".$this->erreur."'}";
+		elseif ($this->rs) echo json_encode($this->rs);
+		else		echo "{'idUti':".$this->idUti.",'role':".$this->role.",'login':".$this->login.",'erreur':".$this->erreur."}";
+	}else{
+		$this->form->setAction($this->url());
+		echo '<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="utf-8" />
+			<title>Livre-postnum : login</title>
+			<link rel="stylesheet" href="../css/site.css" />
+		</head>
+		<body>
+			<h1>Livre-postnum</h1>
+			<h4>'.$this->erreur.'</h4>
+			'.$this->form.'
+		  </body>
+		</html>	';	
+	}
+?>
